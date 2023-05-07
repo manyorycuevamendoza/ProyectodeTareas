@@ -84,4 +84,4 @@ def crear_tareas(nombre_usuario):
         #se reporta el error
         result={'success':False}
 
-    return json.dumps(result
+    return json.dumps(result)
