@@ -33,3 +33,20 @@ def escribir_por_correo(correo_usuario):
 
     #se obtiene la clave asociada con el numero de celular
     usuario=Usuario.query.filter(Usuario.correo_electronico==correo_usuario).first()
+
+ 
+    mensaje="Su usuario en la App🐮 es:"+ usuario.nombre_usuario+"\nSu clave en la App🐮 es: "+usuario.clave
+    email=str(usuario.correo_electronico)
+
+    #print(mensaje,email)
+    
+    try:
+        #se envia la clave (por WhatsApp)
+        correo(email,mensaje) 
+
+        #correo("mariana.capunay@utec.edu.pe","Desde Python")
+        result={"success":True}
+
+    except KeyError:
+        result={"success":False}
+    return json.dumps(result)
