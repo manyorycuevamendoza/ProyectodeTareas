@@ -1,3 +1,38 @@
+from importaciones import * 
+
+@app.route("/agregar/tarea/<usuario>/<tipo>/<tarea>",methods=['POST'])
+@cross_origin()
+def agregar_tarea(usuario,tipo,tarea):
+   #obtiene todas las tareas con ese nombre
+   tareas=Tarea.query.filter(Tarea.nombre==tarea).all()
+   #busca al tipo de Tarea especifico
+   for t in tareas:
+    if t.tipo==tipo and t.    usuario_nombre==usuario:
+            t.eliminada=False 
+            print(t)  
+
+    db.session.commit()
+    return json.dumps({'success':True})
+
+
+from importaciones import *
+
+@app.route("/borrar/tarea/<usuario>/<tipo>/<tarea>",methods=['POST','GET'])
+@cross_origin()
+def borrar_tarea(usuario,tipo,tarea):
+    
+    #obtiene todas las tareas con ese nombre
+    tareas=Tarea.query.filter(Tarea.nombre==tarea).all()
+
+    #busca al tipo de Tarea especifico
+    for t in tareas:
+        if t.tipo==tipo and t.usuario_nombre==usuario:
+            t.eliminada=True   
+
+    db.session.commit()
+    return json.dumps({'success':True})
+
+
 from importaciones import*
 @app.route("/crear_tarea/<nombre_usuario>",methods = ['POST', 'GET'])
 @cross_origin()
@@ -63,7 +98,7 @@ def crear_tareas(nombre_usuario):
     recordatorio=datetime.datetime.strptime(notificacion_dia,'%Y-%m-%d') 
 
     #obteniendo horas y minutos (notificacion_hora = 19:50 )
-    horas=int(notificacion_hora[0:2])
+    horas=int(notificacion_hora[0:2]) #horas=19
     minutos=int(notificacion_hora[3:])
 
     #se suma la hora brindada a la fecha  (para generar recordatorio)
@@ -85,3 +120,24 @@ def crear_tareas(nombre_usuario):
         result={'success':False}
 
     return json.dumps(result)
+
+from importaciones import *
+@app.route("/tareas_pendientes/<usuario_nombre>",methods=['GET','POST'])
+@cross_origin()
+def tareas_pendientes(usuario_nombre):
+
+    tareas=Tarea.query.filter(Tarea.usuario_nombre==usuario_nombre).all()
+
+    
+    tareas_usuario=[] 
+
+    for tarea in tareas:
+        if tarea.eliminada==False and tarea.fecha_entrega>=datetime.date.today():
+            this={"nombre":tarea.nombre,"fecha_inicio":tarea.fecha_inicio,"fecha_limite":tarea.fecha_entrega,"tipo":tarea.tipo}
+
+            tareas_usuario.append(this)
+
+
+    #print(result)
+    return {"tareas":tareas_usuario}
+    #return json.dumps(result)

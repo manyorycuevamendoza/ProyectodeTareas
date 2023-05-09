@@ -28,8 +28,8 @@ class GetUsuarios(Resource):
         try:
             conn = mysql.connect()
             cursor = conn.cursor()
-            cursor.execute("""select * from usuario""")
-            rows = cursor.fetchall()
+            cursor.execute("""select * from usuario""")#consulta
+            rows = cursor.fetchall()#obtiene todos los usuarios, fetchall() obtiene todos los registros
             conn.commit()
             return rows
         except Exception as e:
@@ -108,7 +108,7 @@ class UpdateUser(Resource): # configuraciones
 
 class CreateUser(Resource):
     def post(self):
-        try:
+        try: #se crea un usuario
             conn = mysql.connect()
             cursor = conn.cursor()
             nuevoNombre=request.form["newUsername"] #recibe parametros #obtenemos los datos
