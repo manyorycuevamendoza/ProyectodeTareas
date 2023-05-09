@@ -134,6 +134,7 @@ class CreateUser(Resource):
 #API resource routes
 api.add_resource(GetUsuarios, '/users', endpoint='users')
 api.add_resource(UpdateUser, '/configuraciones', endpoint='user')
+api.add_resource(CreateUser, '/login/register', endpoint='users')
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8000, debug=False)

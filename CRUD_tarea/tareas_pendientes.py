@@ -1,4 +1,4 @@
-from importaciones import*
+from importaciones import *
 @app.route("/tareas_pendientes/<usuario_nombre>",methods=['GET','POST'])
 @cross_origin()
 def tareas_pendientes(usuario_nombre):
@@ -6,7 +6,7 @@ def tareas_pendientes(usuario_nombre):
     tareas=Tarea.query.filter(Tarea.usuario_nombre==usuario_nombre).all()
 
     
-    tareas_usuario=[]
+    tareas_usuario=[] 
 
     for tarea in tareas:
         if tarea.eliminada==False and tarea.fecha_entrega>=datetime.date.today():
