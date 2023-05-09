@@ -1,0 +1,106 @@
+from app import app,db
+from flask import render_template
+from flask import Flask
+import json
+from flask_cors import cross_origin,CORS
+from flask import request
+import datetime
+from app.models import Usuario,Tarea,Tipo_tarea
+from conexion_WhatsApp import notificacion
+from conexion_Gmail import correo
+
+
+
+@app.route("/configuraciones",methods = ['POST'])
+@cross_origin()
+def configuraciones():
+    body = request.get_json() #se obtiene el body pasado por fetch
+    
+    #obtiene parametros de body
+    correo=body["email"]
+    clave=body["password"]
+    nuevo_nombre=body["newName"]
+    nuevo_correo=body["newEmail"]
+    nuevo_telefono=body["newPhone"]
+    nueva_clave=body["newPassword"]
+
+    if correo=='' or  clave=='': #verifica si el correo o la clave son vacios
+        result={'success':False}
+    
+    elif nuevo_nombre=='' and nuevo_correo=='' and nueva_clave=='' and nuevo_telefono=='':
+        #verifica si todos los atributos están vacios
+        result={'success':False}
+
+    else: #cuando se pasó el valor de al menos un atributo
+
+        #se obtiene al usuario
+        usuario=Usuario.query.filter(Usuario.correo_electronico==correo).first()
+
+        if (usuario==None or usuario.clave!=clave):
+            result={'success':False}
+        
+        else: 
+            #se actualiza valores de atributos enviados
+            if nuevo_nombre!='':
+                usuario.nombre_usuario=nuevo_nombre
+
+            if nuevo_correo!='':
+                usuario.correo_electronico=nuevo_correo
+
+            if nuevo_telefono!='':
+                usuario.numero_whatsapp=nuevo_telefono
+            
+            if nueva_clave!='':
+                usuario.clave=nueva_clave
+        
+
+            result={'success':True}
+
+    db.session.commit()
+    return json.dumps(result)
+
+
+-------------------------------------------------------------
+
+@app.route("/login/register",methods = ['POST'])
+@cross_origin()
+def registrar_usuario():
+    print('a')    
+    body = request.get_json() #se obtiene el body pasado por fetch
+
+    nuevoNombre=body["newUsername"]
+    nuevaClave=body["newPassword"]
+    nuevoCorreo=body["newEmail"]
+    nuevoTelefono=body["newPhone"]
+    nuevaFechadeNacimiento=body["newDate"]
+    
+    print(nuevoNombre,nuevoCorreo,nuevoTelefono,nuevaFechadeNacimiento,nuevaClave)
+    
+    nuevoUsuario=Usuario(nombre_usuario=nuevoNombre,numero_whatsapp=nuevoTelefono,correo_electronico=nuevoCorreo,clave=nuevaClave,fecha_nacimiento=nuevaFechadeNacimiento)
+
+    print(nuevoUsuario)
+
+    try:    
+        db.session.add(nuevoUsuario)
+        db.session.commit()
+
+        result={"success":True}
+    except:
+        result={"success":False}
+
+    return json.dumps(result)
+
+-------------------------------------------------------------------
+
+
+@app.route("/usersjson",methods=['GET','POST'])
+@cross_origin()
+def all_users():
+    result=[]
+
+    usuarios=Usuario.query.all()
+    print(usuarios)
+    for usuario in usuarios:
+        result.append(usuario.nombre_usuario)
+
+    return json.dumps(result)
