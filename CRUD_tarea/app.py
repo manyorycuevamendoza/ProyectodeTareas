@@ -25,18 +25,18 @@ mysql.init_app(app)
 #en base a sql
 #------------------------------agregar tareas---------------------------------
 
-class AgregarTask(Resource):
-    def post(self):
+class AddTask(Resource):
+    def post(self,usuario,tipo,tarea): #se recibe el usuario, tipo y tarea por la url
         try:
+        #se conecta a la base de datos
             conn=mysql.connect()
-            cursor=conn.cursor()
-            usuario=request.form['usuario']
-            tipo=request.form['tipo']
-            tarea=request.form['tarea']
-
-            update_task_cmd="""UPDATE tarea SET eliminada=%s WHERE nombre=%s AND tipo=%s AND usuario_nombre=%s"""
-            cursor.execute(update_task_cmd,(False,tarea,tipo,usuario))
+            cursor=conn.cursor() #se crea un cursor para ejecutar comandos
+            #se crea la consulta
+            consulta="UPDATE tarea SET eliminada=%s WHERE nombre=%s AND tipo=%s AND usuario_nombre=%s"
+            cursor.execute(consulta,(False,tarea,tipo,usuario))
             conn.commit()
+            response=jsonify('Tarea agregada exitosamente')
+            response.status_code=200
         except Exception as e:
             print(e)
             return jsonify({'success':False})
@@ -44,20 +44,19 @@ class AgregarTask(Resource):
             cursor.close()
             conn.close()
             return jsonify({'success':True})
-        
-
 #-----------------------------eliminar tareas---------------------------------
 class DeleteTask(Resource):
-    def get(self):
+    def get(self,usuario,tipo,tarea):
         try:
+        #se conecta a la base de datos
             conn=mysql.connect()
-            cursor=conn.cursor()
-            usuario=request.form['usuario']
-            tipo=request.form['tipo']
-            tarea=request.form['tarea']
-            update_task_cmd="""UPDATE tarea SET eliminada=%s WHERE nombre=%s AND tipo=%s AND usuario_nombre=%s"""
-            cursor.execute(update_task_cmd,(True,tarea,tipo,usuario))
+            cursor=conn.cursor() #se crea un cursor para ejecutar comandos
+            #se crea la consulta
+            consulta="UPDATE tarea SET eliminada=%s WHERE nombre=%s AND tipo=%s AND usuario_nombre=%s"
+            cursor.execute(consulta,(True,tarea,tipo,usuario))
             conn.commit()
+            response=jsonify('Tarea eliminada exitosamente')
+            response.status_code=200
         except Exception as e:
             print(e)
             return jsonify({'success':False})
@@ -65,15 +64,13 @@ class DeleteTask(Resource):
             cursor.close()
             conn.close()
             return jsonify({'success':True})
-    
 
 #-----------------------------crear tareas-----------------------------
 class CreateTask(Resource):
-    def post(self):
+    def post(self,nombre_usuario):
         try:
             conn=mysql.connect()
             cursor=conn.cursor()
-            nombre_usuario=request.form['nombre_usuario']#nombre de usuario
             descripcion=request.form['descripcion']#nombre de la tarea
             fecha_limite=request.form['fecha_limite']#fecha limite
             recordatorio_dia=request.form['recordatorio_dia'] #fecha de recordatorio
@@ -95,35 +92,33 @@ class CreateTask(Resource):
             cursor.close()
             conn.close()
             return jsonify({'success':True})
+
         
 #-----------------------------todas la tareas menos las que fueron eliminadas-----------------------------
 class PendingTasks(Resource):
-    def post(self):
+    def post(self,usuario_nombre):
         try:
             conn=mysql.connect()
-            cursor=conn.cursor()
-            usuario_nombre=request.form['usuario_nombre']
-            select_task_cmd="""SELECT nombre,fecha_inicio,fecha_entrega,tipo FROM tarea WHERE usuario_nombre=%s AND eliminada=%s AND fecha_entrega>=%s"""
-            cursor.execute(select_task_cmd,(usuario_nombre,False,datetime.date.today()))
+            cursor=conn.cursor() #se crea un cursor para ejecutar comandos
+            #se crea la consulta
+            consulta="SELECT nombre,fecha_inicio,fecha_entrega,tipo FROM tarea WHERE usuario_nombre=%s AND eliminada=%s AND fecha_entrega>=%s"
+            cursor.execute(consulta,(usuario_nombre,False,datetime.date.today()))
             tareas=cursor.fetchall()
-            tareas_usuario=[]
-            for tarea in tareas:
-                this={"nombre":tarea[0],"fecha_inicio":tarea[1],"fecha_limite":tarea[2],"tipo":tarea[3]}
-                tareas_usuario.append(this)
+            response=jsonify(tareas)
+            response.status_code=200
         except Exception as e:
             print(e)
             return jsonify({'success':False})
         finally:
             cursor.close()
             conn.close()
-            return jsonify({'tareas':tareas_usuario})
+            return jsonify({'success':True})
         
 
 #API resource routing
-api.add_resource(AgregarTask,'/agregar/tarea',endpoint='agregar_tarea')
-api.add_resource(DeleteTask,'/eliminar/tarea',endpoint='eliminar_tarea')
-api.add_resource(CreateTask,'/crear/tarea',endpoint='crear_tarea')
-api.add_resource(PendingTasks,'/pendientes/tareas',endpoint='pendientes_tareas')
-
+api.add_resource(AddTask,'/agregar/tarea/<string:usuario>/<string:tipo>/<string:tarea>',endpoint='agregar_tarea')
+api.add_resource(DeleteTask,'/eliminar_tarea/<string:usuario>/<string:tarea>',endpoint='eliminar_tarea')
+api.add_resource(CreateTask,'/crear_tarea/<string:nombre_usuario>',endpoint='crear_tarea')
+api.add_resource(PendingTasks,'/tareas_pendientes/<string:usuario_nombre>',endpoint='tareas_pendientes')
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, debug=False)
