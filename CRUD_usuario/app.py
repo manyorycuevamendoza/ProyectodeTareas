@@ -14,9 +14,9 @@ api = Api(app)
 #Set database credentials in config.
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'utec'
-app.config['MYSQL_DATABASE_DB'] = 'bd_api'
-app.config['MYSQL_DATABASE_HOST'] = '3.231.7.144' # IP de base de datos
-app.config['MYSQL_DATABASE_PORT'] = 8005
+app.config['MYSQL_DATABASE_DB'] = 'bd_tareas'
+app.config['MYSQL_DATABASE_HOST'] = '44.205.44.157' # IP de base de datos
+app.config['MYSQL_DATABASE_PORT'] = 8010
 
 #Initialize the MySQL extension
 mysql.init_app(app)
@@ -91,8 +91,9 @@ class UpdateUser(Resource): # configuraciones
                 
             #se pasó un usuario válido -  ya se tiene al usuario
 
-            update_user_cmd = """UPDATE usuario SET (nombre_usuario, numero_whatsapp, correo_electronico, clave) 
-                                VALUES(%s, %s, %s,%s) where correo_electronico=%s and clave=%s""" #se actualiza al usuario
+            update_user_cmd = """UPDATE usuario SET nombre_usuario=%s, numero_whatsapp=%s, correo_electronico=%s, 
+                                clave=%s 
+                                  where correo_electronico=%s and clave=%s""" #se actualiza al usuario
                                 
             cursor.execute(update_user_cmd, (nuevo_nombre, nuevo_telefono, nuevo_correo,nueva_clave,correo,clave))
             conn.commit()
@@ -120,7 +121,7 @@ class CreateUser(Resource):
             #print(nuevoNombre,nuevoCorreo,nuevoTelefono,nuevaFechadeNacimiento,nuevaClave)  #verificacion 
 
             consulta = """insert into usuario (nombre_usuario, numero_whatsapp, correo_electronico, clave,fecha_nacimiento) 
-                                VALUES(%s, %s, %s,%s,%s)"""
+                                values (%s, %s, %s,%s,%s)"""
             cursor.execute(consulta, (nuevoNombre, nuevoTelefono, nuevoCorreo,nuevaClave,nuevaFechadeNacimiento))
             conn.commit()
         except Exception as e:
@@ -134,7 +135,7 @@ class CreateUser(Resource):
 #API resource routes
 api.add_resource(GetUsuarios, '/users', endpoint='users')
 api.add_resource(UpdateUser, '/configuraciones', endpoint='user')
-api.add_resource(CreateUser, '/login/register', endpoint='users')
+api.add_resource(CreateUser, '/login/register', endpoint='create_user')
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8000, debug=False)
