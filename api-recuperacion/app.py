@@ -1,10 +1,6 @@
 from flask import Flask, jsonify, request
 from flaskext.mysql import MySQL
 from flask_restful import Resource, Api
-from email.message import EmailMessage
-import smtplib
-from twilio.rest import Client
-import datetime
 
 
 #Create an instance of Flask
@@ -19,14 +15,14 @@ api = Api(app)
 #Set database credentials in config.
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'utec'
-app.config['MYSQL_DATABASE_DB'] = 'bd_api'
-app.config['MYSQL_DATABASE_HOST'] = '3.231.7.144' # IP de base de datos
-app.config['MYSQL_DATABASE_PORT'] = 8005
+app.config['MYSQL_DATABASE_DB'] = 'bd_tareas'
+app.config['MYSQL_DATABASE_HOST'] = '44.208.124.18' # IP de base de datos
+app.config['MYSQL_DATABASE_PORT'] = 8010
 
 #Initialize the MySQL extension
 mysql.init_app(app)
 
-
+'''
 
 def notificacion(numero, cuerpo):
     account_sid = 'AC2a82bb2cd8cc4e0ef5d81a059ada9d11'
@@ -107,25 +103,62 @@ class Escribir_celular(Resource):
 
 
 
+@app.route("/login/async",methods=['POST'])
+@cross_origin()
+def login_asincrono():
+    body = request.get_json() #se obtiene el body pasado por fetch
+    
+    nombre=body["username"]
+    clave=body["password"]
+
+    #se obtiene a un usuario asociado a traves del nombre
+    usuario=Usuario.query.filter(Usuario.nombre_usuario==nombre).first()
+
+    if usuario==None or usuario.clave!=clave:
+        result={"success":False}
+
+    else:
+        result={"success":True}
+
+    return json.dumps(result)}
+'''
     
     
 class Login(Resource):
-    def login_asincrono():
-        body = request.get_json() #se obtiene el body pasado por fetch
+    def post(self):
+        try:
+            conn=mysql.connect()
+            cursor=conn.cursor()
+
+            #obtenemos el body pasado por fetch
+            
+            nombre=request.form["username"]
+            clave=request.form["password"]
+
+            #se obtiene a un usuario asociado a traves del nombre con mysql
+            cursor.execute("SELECT * FROM usuario WHERE nombre_usuario=%s AND clave=%s",(nombre,clave))
+            conn.commit()
+            usuario=cursor.fetchall()
+
+
+            if usuario==None:
+                result=jsonify({'success':False})   
+
+            else:
+                result=jsonify({'success':True})    
+
+            
+        except Exception as e:
+            print(e)
+            return result
+        finally:
+            cursor.close() 
+            conn.close()
+            return result
+
         
-        nombre=body["username"]
-        clave=body["password"]
+        
 
-        #se obtiene a un usuario asociado a traves del nombre
-        usuario=Usuario.query.filter(Usuario.nombre_usuario==nombre).first()
-
-        if usuario==None or usuario.clave!=clave:
-            result={"success":False}
-
-        else:
-            result={"success":True}
-
-        return json.dumps(result)
 
 
 
@@ -134,8 +167,8 @@ class Login(Resource):
 
 #API resource routing
 api.add_resource(Login,'/login/async',endpoint='agregar_tarea')
-api.add_resource(Escribir_correo,'/recuperar/correo/<string:correo_usuario>',endpoint='recuperar')
-api.add_resource(Escribir_celular,'/recuperar/celular/<string:celular>',endpoint='recuperar')
+#api.add_resource(Escribir_correo,'/recuperar/correo/<string:correo_usuario>',endpoint='recuperar')
+#api.add_resource(Escribir_celular,'/recuperar/celular/<string:celular>',endpoint='recuperar')
 
 
 if __name__ == "__main__":
