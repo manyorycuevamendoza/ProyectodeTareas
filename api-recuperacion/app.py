@@ -16,7 +16,7 @@ api = Api(app)
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'utec'
 app.config['MYSQL_DATABASE_DB'] = 'bd_tareas'
-app.config['MYSQL_DATABASE_HOST'] = '44.208.124.18' # IP de base de datos
+app.config['MYSQL_DATABASE_HOST'] = '44.205.44.157' # IP de base de datos
 app.config['MYSQL_DATABASE_PORT'] = 8010
 
 #Initialize the MySQL extension
@@ -138,23 +138,25 @@ class Login(Resource):
             #se obtiene a un usuario asociado a traves del nombre con mysql
             cursor.execute("SELECT * FROM usuario WHERE nombre_usuario=%s AND clave=%s",(nombre,clave))
             conn.commit()
-            usuario=cursor.fetchall()
 
-
-            if usuario==None:
-                result=jsonify({'success':False})   
+            if cursor.fetchall():
+                response = jsonify({'success':True})         
+                response.status_code = 200
 
             else:
-                result=jsonify({'success':True})    
+                response = jsonify({'success':False})         
+                response.status_code = 400
 
             
         except Exception as e:
             print(e)
-            return result
+            response = jsonify({'success':False})         
+            response.status_code = 400
+
         finally:
             cursor.close() 
             conn.close()
-            return result
+            return response
 
         
         
