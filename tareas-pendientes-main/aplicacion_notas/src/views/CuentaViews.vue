@@ -1,6 +1,6 @@
 <template>
     <!--<button class="btn btn-link" @click="onLogout()">Inicio</button>-->
-    <a href='http://LB-Proyecto-1812304456.us-east-1.elb.amazonaws.com:8005/Login'>Inicio</a>
+    <a href=':8005/Login'>Inicio</a>
     <br><br>
      
     <label for="newUsername">Nombre:</label>

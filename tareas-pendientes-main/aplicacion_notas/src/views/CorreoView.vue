@@ -1,6 +1,6 @@
 <template>
     <div> Recupera tu cuenta</div>
-    <a href='http://localhost:8080/Login'>Inicio</a>
+    <a href=':8080/Login'>Inicio</a>
 
 
     <div class="main">
