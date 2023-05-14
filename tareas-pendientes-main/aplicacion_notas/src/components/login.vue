@@ -39,7 +39,7 @@
             this.password = e.target.value;
         },
         onLogin() {
-            const url = "http://localhost:5000/login/async";
+            const url = "http://LB-Proyecto-1812304456.us-east-1.elb.amazonaws.com:8007/login/async";
 
             const body = {
                 "username": this.username,

@@ -1,6 +1,6 @@
 <template>
     <!--<button class="btn btn-link" @click="onLogout()">Inicio</button>-->
-    <a href='http://localhost:8080/Login'>Inicio</a>
+    <a href='http://LB-Proyecto-1812304456.us-east-1.elb.amazonaws.com:8005/Login'>Inicio</a>
     <br><br>
      
     <label for="newUsername">Nombre:</label>
@@ -55,14 +55,17 @@
 
         }
     },
+    
     created() {
-        const url = "http://localhost:5000/usersjson";
+        /*const url = "http://localhost:5000/usersjson";
 
         fetch(url).then((res) => res.json()).then((data) => this.usuarios = data);
-
+        */
+        
         if (sessionStorage.getItem('user')) {
             this.username = sessionStorage.getItem('user');
         }
+        
     },
     methods: {
         onLogout() {
@@ -91,7 +94,7 @@
                 this.newfecha = e.target.value;
             },
             onNewUsernameClick() {
-                const url = "http://localhost:5000/login/register";
+                const url = "http://LB-Proyecto-1812304456.us-east-1.elb.amazonaws.com:8005/login/register";
 
                 const body = {
                     "newUsername": this.newUsername,
