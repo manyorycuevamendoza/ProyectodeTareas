@@ -1,9 +1,11 @@
 from flask import Flask, jsonify, request
 from flaskext.mysql import MySQL
 from flask_restful import Resource, Api
-
+from flask_cors import CORS
+import json
 #Create an instance of Flask
 app = Flask(__name__)
+CORS(app)
 
 #Create an instance of MySQL
 mysql = MySQL()
@@ -15,7 +17,7 @@ api = Api(app)
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'utec'
 app.config['MYSQL_DATABASE_DB'] = 'bd_tareas'
-app.config['MYSQL_DATABASE_HOST'] = '44.208.124.18' # IP de base de datos
+app.config['MYSQL_DATABASE_HOST'] = '44.205.44.157' # IP de base de datos
 app.config['MYSQL_DATABASE_PORT'] = 8010
 
 #Initialize the MySQL extension
@@ -30,8 +32,16 @@ class GetUsuarios(Resource):
             cursor = conn.cursor()
             cursor.execute("""select * from usuario""")#consulta
             rows = cursor.fetchall()#obtiene todos los usuarios, fetchall() obtiene todos los registros
+            # Filtrar y transformar las tareas
+            usuario = []
+            for tarea in rows:
+                tarea_dict = {
+                    "username": tarea[0],
+                    "email": tarea[2]
+                }
+                usuario.append(tarea_dict)
             conn.commit()
-            return rows
+            return json.dumps(usuario)
         except Exception as e:
             print(e)
         finally:
@@ -40,11 +50,11 @@ class GetUsuarios(Resource):
 
     def post(self):
         rows = self._query_database()
-        return (jsonify(rows))
+        return (rows)
     
     def get(self):
         rows = self._query_database()
-        return (jsonify(rows))
+        return (rows)
             
 #Update a User
 class UpdateUser(Resource): # configuraciones
@@ -88,12 +98,11 @@ class UpdateUser(Resource): # configuraciones
                                 
             cursor.execute(update_user_cmd, (nuevo_nombre, nuevo_telefono, nuevo_correo,nueva_clave,correo,clave))
             conn.commit()
-            response = jsonify({'success':True})         
-            response.status_code = 200
+            response = json.dumps({'success':True})         
+           
         except Exception as e:
             print(e)
-            response = jsonify({'success':False})         
-            response.status_code = 400
+            response = json.dumps({'success':False})        
         
         finally:
             cursor.close()
@@ -118,12 +127,11 @@ class CreateUser(Resource):
                                 values (%s, %s, %s,%s,%s)"""
             cursor.execute(consulta, (nuevoNombre, nuevoTelefono, nuevoCorreo,nuevaClave,nuevaFechadeNacimiento))
             conn.commit()
-            response = jsonify({'success':True})         
-            response.status_code = 200
+            response = json.dumps({'success':True})         
         except Exception as e:
             print(e)
-            response = jsonify({'success':False})         
-            response.status_code = 400
+            response = json.dumps({'success':False})         
+        
         finally:
             cursor.close()
             conn.close()    

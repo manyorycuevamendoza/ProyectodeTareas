@@ -1,10 +1,13 @@
 from flask import Flask, jsonify, request
 from flaskext.mysql import MySQL
 from flask_restful import Resource, Api
+from flask_cors import CORS
 #from importaciones import *
 import datetime
+import json
 #Create an instance of Flask
 app = Flask(__name__)
+CORS(app)
 
 #Create an instance of MySQL
 mysql = MySQL()
@@ -16,7 +19,7 @@ api = Api(app)
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'utec'
 app.config['MYSQL_DATABASE_DB'] = 'bd_tareas'
-app.config['MYSQL_DATABASE_HOST'] = '54.209.128.141' # IP de base de datos
+app.config['MYSQL_DATABASE_HOST'] = '44.205.44.157' # IP de base de datos
 app.config['MYSQL_DATABASE_PORT'] = 8010
 
 #Initialize the MySQL extension
@@ -42,11 +45,11 @@ class PendingTasks(Resource):
                 }
                 tareas_usuario.append(tarea_dict)
 
-            response = jsonify(tareas_usuario)
+            response = json.dumps(tareas_usuario)
 
         except Exception as e:
             print(e)
-            response = jsonify([])
+            response = jsonify.dumps([])
         
         finally:
             cursor.close()
