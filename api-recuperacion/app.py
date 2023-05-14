@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 from flaskext.mysql import MySQL
 from flask_restful import Resource, Api
-
+import json
 import smtplib
 from email.message import EmailMessage
 
@@ -232,19 +232,17 @@ class Login(Resource):
             cursor.execute("SELECT * FROM usuario WHERE nombre_usuario=%s AND clave=%s",(nombre,clave))
             conn.commit()
 
-            if cursor.fetchall():
-                response = jsonify({'success':True})         
-                response.status_code = 200
+            if len(cursor.fetchall())==0:
+                response = json.dumps({'success':True})         
 
             else:
-                response = jsonify({'success':False})         
-                response.status_code = 400
+                response = json.dumps({'success':False})         
 
             
         except Exception as e:
             print(e)
-            response = jsonify({'success':False})         
-            response.status_code = 400
+            response = json.dumps({'success':False})        
+            
 
         finally:
             cursor.close() 
