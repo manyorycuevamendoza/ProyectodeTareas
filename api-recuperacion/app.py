@@ -20,7 +20,7 @@ api = Api(app)
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'utec'
 app.config['MYSQL_DATABASE_DB'] = 'bd_tareas'
-app.config['MYSQL_DATABASE_HOST'] = '44.208.124.18' # IP de base de datos
+app.config['MYSQL_DATABASE_HOST'] = '54.209.128.141' # IP de base de datos
 app.config['MYSQL_DATABASE_PORT'] = 8010
 
 #Initialize the MySQL extension
@@ -114,57 +114,58 @@ def escribir_por_correo(correo_usuario):
 
 '''
 
-class Escribir_correo(Resource):
-    def correo(self,destinatario,mensaje):
-        remitente = "app.pendientes.correo@gmail.com"
-        destinatario = destinatario
-            #mensaje = "¡Hola, mundo!"
-        email = EmailMessage()
-        email["From"] = remitente
-        email["To"] = destinatario
-        email["Subject"] = "Recuperación de Cuenta"
-        email.set_content(mensaje)
-        smtp = smtplib.SMTP_SSL("smtp.gmail.com")
-        smtp.sendmail(remitente, destinatario, email.as_string())
-        smtp.quit()
+# class Escribir_correo(Resource):
+    
+#     def post(self,correo_usuario):
+#         try:
+#             conn=mysql.connect()
+#             cursor=conn.cursor()
 
-    def post(self,correo_usuario):
-        try:
-            conn=mysql.connect()
-            cursor=conn.cursor()
+#             #se obtiene la clave asociada con el numero de celular
+#             usuario=cursor.execute("SELECT * FROM usuario WHERE correo_electronico=%s",(correo_usuario))
+#             conn.commit()
 
-            #se obtiene la clave asociada con el numero de celular
-            usuario=cursor.execute("SELECT * FROM usuario WHERE correo_electronico=%s",(correo_usuario))
-            conn.commit()
-
-            usuario=cursor.fetchall() #fetchall devuelve una lista de tuplas, por ejemplo: 
+#             usuario=cursor.fetchall() #fetchall devuelve una lista de tuplas, por ejemplo: 
             
-            nombre_user=usuario[0][0] #usuario[0] es la primera tupla, usuario[0][0] es el segundo elemento de la tupla
-            correo_=usuario[0][2] #usuario[0] es la primera tupla, usuario[0][2] es el tercer elemento de la tupla
-            clave_user=usuario[0][3] #usuario[0] es la primera tupla, usuario[0][3] es el tercer elemento de la tupla
-            #mensaje="Su usuario en la App🐮 es:"+ nombre_user.nombre_usuario+"\nSu clave en la App🐮 es: "+clave_user.clave
-            #email=str(correo_.correo_electronico)
-            mensaje="Su usuario en la App🐮 es:"+ nombre_user+"\nSu clave en la App🐮 es: "+clave_user
-            email=str(correo_)
+#             nombre_user=usuario[0][0] #usuario[0] es la primera tupla, usuario[0][0] es el segundo elemento de la tupla
+#             correo_=usuario[0][2] #usuario[0] es la primera tupla, usuario[0][2] es el tercer elemento de la tupla
+#             clave_user=usuario[0][3] #usuario[0] es la primera tupla, usuario[0][3] es el tercer elemento de la tupla
+#             #mensaje="Su usuario en la App🐮 es:"+ nombre_user.nombre_usuario+"\nSu clave en la App🐮 es: "+clave_user.clave
+#             #email=str(correo_.correo_electronico)
+#             mensaje="Su usuario en la App🐮 es:"+ nombre_user+"\nSu clave en la App🐮 es: "+clave_user
+#             destinatario=str(correo_)
 
-            #print(mensaje,email)
-            self.correo(email,mensaje) #por que no esta funcionando? : porque no se ha importado la funcion
+#             #print(mensaje,email)
+#             #self.correo(email,mensaje) #por que no esta funcionando? : porque no se ha importado la funcion
+#             #def correo(self,destinatario,mensaje):
+#             remitente = "app.pendientes.correo@gmail.com"
+#             destinatario = destinatario
+#                 #mensaje = "¡Hola, mundo!"
+#             email = EmailMessage()
+#             email["From"] = remitente
+#             email["To"] = destinatario
+#             email["Subject"] = "Recuperación de Cuenta"
+#             email.set_content(mensaje)
+#             smtp = smtplib.SMTP_SSL("smtp.gmail.com")
+#             smtp.login(remitente, "zhwmsebxjhphhuvy") #contraseña generada por Gmail para la cuenta creada
+#             smtp.sendmail(remitente, destinatario, email.as_string())
+#             smtp.quit()
 
-            if cursor.fetchall():
-                result=jsonify({"success":True})
-                result.status_code=200
+#             if cursor.fetchall():
+#                 result=jsonify({"success":True})
+#                 result.status_code=200
 
-            else:
-                result=jsonify({"success":False})
-                result.status_code=404
-        except Exception as e:
-            print(e)
-            result=jsonify({"success":False})
-            result.status_code=404
-        finally:
-            cursor.close()
-            conn.close()
-            return result
+#             else:
+#                 result=jsonify({"success":False})
+#                 result.status_code=404
+#         except Exception as e:
+#             print(e)
+#             result=jsonify({"success":False})
+#             result.status_code=404
+#         finally:
+#             cursor.close()
+#             conn.close()
+#             return result
         
 
     
@@ -257,7 +258,7 @@ class Login(Resource):
 
 #API resource routing
 api.add_resource(Login,'/login/async',endpoint='agregar_tarea')
-api.add_resource(Escribir_correo,'/recuperar/correo/<correo_usuario>',endpoint='recuperar')
+#api.add_resource(Escribir_correo,'/recuperar/correo/<correo_usuario>',endpoint='recuperar')
 #api.add_resource(Escribir_celular,'/recuperar/celular/<string:celular>',endpoint='recuperar')
 
 
