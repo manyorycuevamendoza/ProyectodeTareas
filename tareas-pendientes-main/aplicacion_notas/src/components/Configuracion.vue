@@ -139,7 +139,7 @@
              
          },
          onNewUsernameClick() {
-                const url="http://LB-Proyecto-1812304456.us-east-1.elb.amazonaws.com:8005/configuraciones";
+                const url="http://LB-Proyecto-707432864.us-east-1.elb.amazonaws.com:8005/configuraciones";
                 const body={
                     "password": this.contrasena_,
                     "email": this.correo_,

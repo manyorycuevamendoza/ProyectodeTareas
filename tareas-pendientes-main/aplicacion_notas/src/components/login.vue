@@ -39,7 +39,7 @@
             this.password = e.target.value;
         },
         onLogin() {
-            const url = "http://LB-Proyecto-1812304456.us-east-1.elb.amazonaws.com:8007/login/async";
+            const url = "http://LB-Proyecto-707432864.us-east-1.elb.amazonaws.com:8007/login/async";
 
             const body = {
                 "username": this.username,
@@ -57,7 +57,7 @@
                 this.loginAttempt = true;
                 //operador ternario (ternary operator)
                 // this.success = data.success ? true : false;
-
+                console.log('aqui');
                 this.success = data.success;
                 if (this.success) {
                     sessionStorage.setItem('user', this.username);
