@@ -232,7 +232,7 @@ class Login(Resource):
             cursor.execute("SELECT * FROM usuario WHERE nombre_usuario=%s AND clave=%s",(nombre,clave))
             conn.commit()
 
-            if len(cursor.fetchall())==0:
+            if len(cursor.fetchall())!=0:
                 response = json.dumps({'success':True})         
 
             else:
