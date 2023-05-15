@@ -49,10 +49,11 @@
             fetch(url, {
                 method: "POST",
                 body: JSON.stringify(body),
+                mode: 'no-cors', // Agregar el modo "no-cors"
                 headers: {
                     "Content-Type": "application/json"
                 }
-            }).then((resp) => resp.json())
+            })//.//then((resp) => resp.json())
             .then((data) => {
                 this.loginAttempt = true;
                 //operador ternario (ternary operator)

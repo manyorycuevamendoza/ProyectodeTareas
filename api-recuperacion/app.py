@@ -21,44 +21,54 @@ api = Api(app)
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'utec'
 app.config['MYSQL_DATABASE_DB'] = 'bd_tareas'
-app.config['MYSQL_DATABASE_HOST'] = '54.209.128.141' # IP de base de datos
+app.config['MYSQL_DATABASE_HOST'] = '44.205.44.157' # IP de base de datos
 app.config['MYSQL_DATABASE_PORT'] = 8010
 
 #Initialize the MySQL extension
 mysql.init_app(app)
 
-    
-class Login(Resource):
-    def post(self):
-        try:
-            conn=mysql.connect()
-            cursor=conn.cursor()
+"""
+@app.after_request
+def add_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'POST'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    return response
+"""
+@app.route('/login/async', methods=['POST'])
+def login():
+    try:
+        conn=mysql.connect()
+        cursor=conn.cursor()
 
-            #obtenemos el body pasado por fetch
-            
-            nombre=request.form["username"]
-            clave=request.form["password"]
+        #obtenemos el body pasado por fetch
+        
+        nombre=request.form["username"]
+        clave=request.form["password"]
 
-            #se obtiene a un usuario asociado a traves del nombre con mysql
-            cursor.execute("SELECT * FROM usuario WHERE nombre_usuario=%s AND clave=%s",(nombre,clave))
-            conn.commit()
+        #se obtiene a un usuario asociado a traves del nombre con mysql
+        cursor.execute("SELECT * FROM usuario WHERE nombre_usuario=%s AND clave=%s",(nombre,clave))
+        conn.commit()
 
-            if len(cursor.fetchall())!=0:
-                response = json.dumps({'success':True})         
+        if len(cursor.fetchall())!=0:
+            response = jsonify({'success':True}) 
+            response.headers.add('Access-Control-Allow-Origin', '*')        
 
-            else:
-                response = json.dumps({'success':False})         
+        else:
+            response = jsonify({'success':False}) 
+            response.headers.add('Access-Control-Allow-Origin', '*')     
 
-            
-        except Exception as e:
-            print(e)
-            response = json.dumps({'success':False})        
-            
+        
+    except Exception as e:
+        print(e)
+        response = jsonify({'success':False}) 
+        response.headers.add('Access-Control-Allow-Origin', '*')        
+        
 
-        finally:
-            cursor.close() 
-            conn.close()
-            return response
+    finally:
+        cursor.close() 
+        conn.close()
+        return response
 
         
         
@@ -66,7 +76,7 @@ class Login(Resource):
 
 
 #API resource routing
-api.add_resource(Login,'/login/async',endpoint='login_async')
+#api.add_resource(Login,'/login/async',endpoint='login_async')
 #api.add_resource(Escribir_correo,'/recuperar/correo/<correo_usuario>',endpoint='recuperar')
 #api.add_resource(Escribir_celular,'/recuperar/celular/<string:celular>',endpoint='recuperar')
 
