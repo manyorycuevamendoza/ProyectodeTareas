@@ -16,7 +16,7 @@
   </template>
   
   <script>
-  import router from "../router/index"
+  import router from "../router/index" 
   export default {
     name: 'LoginComponent',
     props: {
@@ -34,31 +34,59 @@
             this.loginAttempt = false;
             this.username = e.target.value;
         },
-        onPasswordInput(e) {
+        onPass  wordInput(e) {
             this.loginAttempt = false;
             this.password = e.target.value;
         },
         onLogin() {
-            const url = "http://LB-Proyecto-707432864.us-east-1.elb.amazonaws.com:8007/login/async";
+            //const url = "http://44.211.217.4:8080/login/async";
+            const url = "http://LB-Proyecto-1812304456.us-east-1.elb.amazonaws.com:8007/login/async";
 
+            /*
             const body = {
                 "username": this.username,
                 "password": this.password
             };
+            */
+
+            var details = {
+                'username': this.username,
+                'password': this.password,
+            };
+
+            var formBody = [];
+            for (var property in details) {
+            var encodedKey = encodeURIComponent(property);
+            var encodedValue = encodeURIComponent(details[property]);
+            formBody.push(encodedKey + "=" + encodedValue);
+            }
+            formBody = formBody.join("&");
+            /*
+            fetch('https://example.com/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            },
+            body: formBody
+            })
+            */
 
             fetch(url, {
-                method: "POST",
-                body: JSON.stringify(body),
-                mode: 'no-cors', // Agregar el modo "no-cors"
+                method: 'POST',
+                //body: JSON.stringify(body),
+                body: formBody,
+                //mode: 'no-cors', // Agregar el modo "no-cors"
                 headers: {
-                    "Content-Type": "application/json"
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                    //"Content-Type": "application/json"
                 }
-            })//.//then((resp) => resp.json())
+            }).then((resp) => resp.json())
             .then((data) => {
                 this.loginAttempt = true;
                 //operador ternario (ternary operator)
                 // this.success = data.success ? true : false;
-                console.log('aqui');
+                console.log(this.username, " ",this.password);
+                console.log(data);
                 this.success = data.success;
                 if (this.success) {
                     sessionStorage.setItem('user', this.username);
