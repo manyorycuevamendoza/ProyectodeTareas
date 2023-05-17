@@ -57,7 +57,7 @@
     },
     
     created() {
-        const url = "http://localhost:5000/users";
+        const url = "http://LB-Proyecto-1812304456.us-east-1.elb.amazonaws.com:8005/users";
 
         fetch(url).then((res) => res.json()).then((data) => this.usuarios = data);
         
@@ -65,7 +65,7 @@
         if (sessionStorage.getItem('user')) {
             this.username = sessionStorage.getItem('user');
         }
-        
+          
     },
     methods: {
         onLogout() {
@@ -94,8 +94,10 @@
                 this.newfecha = e.target.value;
             },
             onNewUsernameClick() {
-                const url = "http://LB-Proyecto-707432864.us-east-1.elb.amazonaws.com:8005/login/register";
+                const url = "http://LB-Proyecto-1812304456.us-east-1.elb.amazonaws.com:8005/login/register";
+                //const url = "http://LB-Proyecto-707432864.us-east-1.elb.amazonaws.com:8005/login/register";
 
+                /*
                 const body = {
                     "newUsername": this.newUsername,
                     "newPassword": this.newPassword,
@@ -103,13 +105,29 @@
                     "newPhone":this.newPhone,
                     "newDate":this.newfecha
                 };
+                */
+                var details = {
+                    "newUsername": this.newUsername,
+                    "newPassword": this.newPassword,
+                    "newEmail": this.newEmail,
+                    "newPhone":this.newPhone,
+                    "newDate":this.newfecha,
+            };
+
+            var formBody = [];
+            for (var property in details) {
+            var encodedKey = encodeURIComponent(property);
+            var encodedValue = encodeURIComponent(details[property]);
+            formBody.push(encodedKey + "=" + encodedValue);
+            }
+            formBody = formBody.join("&");
 
                 //funcion register
                 fetch(url, {
                     method: "POST",
-                    body: JSON.stringify(body),
+                    body: formBody,
                     headers: {
-                    "Content-Type": "application/json"
+                        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
                 }
                 }).then((resp) => resp.json())
                 .then((data) => {
