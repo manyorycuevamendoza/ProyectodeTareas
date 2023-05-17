@@ -130,14 +130,16 @@
     created() {
     const usuario=sessionStorage.getItem("user");
     
-    const url="http://LB-Proyecto-707432864.us-east-1.elb.amazonaws.com:8006/tareas_pendientes/"+usuario;
+    const url = "http://LB-Proyecto-1812304456.us-east-1.elb.amazonaws.com:8006/tareas_pendientes/"+usuario;
+    //const url="http://LB-Proyecto-707432864.us-east-1.elb.amazonaws.com:8006/tareas_pendientes/"+usuario;
 
+   
     let result=[];
 
     fetch(url,{
         method: 'POST',
         headers:{
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
         }
     }).then(res=>res.json())
     .then(data=>{
