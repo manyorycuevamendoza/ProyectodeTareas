@@ -19,7 +19,7 @@ api = Api(app)
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'utec'
 app.config['MYSQL_DATABASE_DB'] = 'bd_tareas'
-app.config['MYSQL_DATABASE_HOST'] = '44.205.44.157' # IP de base de datos
+app.config['MYSQL_DATABASE_HOST'] = '54.209.128.141' # IP de base de datos
 app.config['MYSQL_DATABASE_PORT'] = 8010
 
 #Initialize the MySQL extension
@@ -33,7 +33,7 @@ class PendingTasks(Resource):
             consulta = "SELECT * FROM tarea WHERE usuario_nombre = %s AND eliminada = 0"
             cursor.execute(consulta, (usuario_nombre))
             tareas_db = cursor.fetchall()
-            
+
             # Filtrar y transformar las tareas
             tareas_usuario = []
             for tarea in tareas_db:
@@ -45,15 +45,18 @@ class PendingTasks(Resource):
                 }
                 tareas_usuario.append(tarea_dict)
 
-            response = json.dumps(tareas_usuario)
+            response = jsonify(tareas_usuario)
+
 
         except Exception as e:
             print(e)
-            response = jsonify.dumps([])
-        
+            response = jsonify([])
+
+
         finally:
             cursor.close()
             conn.close()
+            response.headers.add('Access-Control-Allow-Origin', '*')
             return response
 
     def get(self, usuario_nombre):
