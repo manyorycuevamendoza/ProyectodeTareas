@@ -139,7 +139,9 @@
              
          },
          onNewUsernameClick() {
-                const url="http://LB-Proyecto-707432864.us-east-1.elb.amazonaws.com:8005/configuraciones";
+                const url = "http://LB-Proyecto-1812304456.us-east-1.elb.amazonaws.com:8005/configuraciones";
+                //const url="http://LB-Proyecto-707432864.us-east-1.elb.amazonaws.com:8005/configuraciones";
+                /*
                 const body={
                     "password": this.contrasena_,
                     "email": this.correo_,
@@ -148,11 +150,28 @@
                     "newPhone": this.newPhone,
                     "newPassword": this.newPassword,
                 };
+                */
+                var details = {
+                    "password": this.contrasena_,
+                    "email": this.correo_,
+                    "newName": this.newUsername,
+                    "newEmail": this.newEmail,
+                    "newPhone": this.newPhone,
+                    "newPassword": this.newPassword,
+            };
+
+            var formBody = [];
+            for (var property in details) {
+            var encodedKey = encodeURIComponent(property);
+            var encodedValue = encodeURIComponent(details[property]);
+            formBody.push(encodedKey + "=" + encodedValue);
+            }
+            formBody = formBody.join("&");
                 fetch(url,{
                     method: 'POST',
-                    body: JSON.stringify(body),
+                    body: formBody,
                     headers:{
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
                     }
                 })
                 .then(res => res.json())
